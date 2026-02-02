@@ -1,6 +1,4 @@
 <app-navigation></app-navigation>
-
-<!-- Name Modal - only show if no name saved -->
 <div *ngIf="showNameModal" class="modal-overlay">
   <div class="modal">
     <h2>ברוכים הבאים! 👋</h2>
@@ -16,8 +14,5 @@
   </div>
 </div>
 
-<!-- Main content - show when name is provided or after closing modal -->
 <router-outlet></router-outlet>
-
-<!-- Footer Component -->
 <app-footer></app-footer>
