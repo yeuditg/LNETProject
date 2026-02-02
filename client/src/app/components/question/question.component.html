@@ -23,6 +23,6 @@
       {{ getTotalVotes() }} הצבעות
     </span>
   </div>
-  
-  <div class="card-arrow" *ngIf="clickable">→</div>
+  @if(clickable){ <div class="card-arrow">→</div>}
+ 
 </div>
