@@ -1,0 +1,8 @@
+<div *ngFor="let r of results" class="result-card">
+  <h3>{{ r.question }}</h3>
+  <ul>
+    <li *ngFor="let a of r.answers">
+      {{ a.text }} - {{ a.votes }} הצבעות
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,28 @@
+
+<div 
+  class="question-card" 
+  [class.clickable]="clickable"
+  (click)="onQuestionClick()"
+>
+  <div class="question-header">
+    <span class="question-type" [class.trivia]="question.type === QuestionType.Trivia">
+      {{ getQuestionTypeLabel() }}
+    </span>
+    <span class="question-id">#{{ question.id }}</span>
+  </div>
+  
+  <h3 class="question-text">{{ question.text }}</h3>
+  
+  <div class="question-stats" *ngIf="showAnswers">
+    <span class="stat">
+      <span class="stat-icon">📊</span>
+      {{ question.answers.length }} תשובות
+    </span>
+    <span class="stat">
+      <span class="stat-icon">🗳️</span>
+      {{ getTotalVotes() }} הצבעות
+    </span>
+  </div>
+  
+  <div class="card-arrow" *ngIf="clickable">→</div>
+</div>

@@ -1,0 +1,7 @@
+.result-card {
+  border: 1px solid primary-color;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  h3 { color: primary-color; }
+}

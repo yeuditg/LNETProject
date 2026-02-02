@@ -1,0 +1,96 @@
+<div class="create-container">
+  <div class="create-card">
+    <div class="card-header">
+      <h2 class="title">צור שאלה חדשה</h2>
+      <p class="subtitle">הוסף שאלה ותשובות אפשריות להצבעה</p>
+    </div>
+
+    <div class="form-section">
+      <!-- Question Input -->
+      <div class="input-group">
+        <label class="input-label">השאלה שלך</label>
+        <input
+          type="text"
+          [(ngModel)]="currentQuestion.Text"
+          name="questionText"
+          placeholder="לדוגמה: מה הפיצה האהובה עליכם?"
+          class="question-input"
+        >
+      </div>
+
+      <!-- Question Type -->
+      <div class="input-group">
+        <label class="input-label">סוג השאלה</label>
+        <div class="type-options">
+          <label>
+            <input type="radio" name="qtype" [(ngModel)]="currentQuestion.Type" [value]="QuestionType.Poll"> POLL
+          </label>
+        <br/>
+          <label>
+            <input type="radio" name="qtype" [(ngModel)]="currentQuestion.Type" [value]="QuestionType.Trivia"> TRIVIA
+          </label>
+        </div>
+        <small *ngIf="currentQuestion.Type === QuestionType.Poll">POLL — אין לבחור תשובה נכונה</small>
+        <small *ngIf="currentQuestion.Type === QuestionType.Trivia">TRIVIA — יש לבחור תשובה נכונה אחת</small>
+      </div>
+
+      <!-- Answers Section -->
+      <div class="answers-section">
+        <div class="section-header">
+          <label class="input-label">תשובות אפשריות</label>
+          <span class="answers-count">{{ currentQuestion.Answers.length }} תשובות</span>
+        </div>
+
+        <div class="answers-list">
+          <div *ngFor="let answer of currentQuestion.Answers; let i=index; trackBy: trackByIndex" class="answer-item">
+            <div class="answer-tag">{{ i + 1 }}</div>
+
+            <input
+              type="text"
+              [(ngModel)]="currentQuestion.Answers[i].text"
+              [name]="'answer-' + i"
+              placeholder="תשובה {{ i + 1 }}"
+              class="answer-input"
+            >
+
+            <!-- סימון תשובה נכונה נראה רק כשסוג = TRIVIA -->
+            <div *ngIf="currentQuestion.Type === QuestionType.Trivia" class="correct-marker">
+              <input
+                [attr.type]="allowMultipleCorrect ? 'checkbox' : 'radio'"
+                [checked]="currentQuestion.Answers[i].isCorrect"
+                (change)="onCorrectToggle($event, i)"
+                [attr.name]="allowMultipleCorrect ? null : 'correct-group'"
+                [attr.title]="allowMultipleCorrect ? 'סמן כתשובה נכונה (מספר אפשרויות אפשרי)' : 'סמן כתשובה נכונה (אפשרות יחידה)'"
+              >
+              <label>תשובה נכונה</label>
+            </div>
+
+            <button
+              *ngIf="currentQuestion.Answers.length > 2"
+              (click)="removeAnswer(i)"
+              class="remove-btn"
+              type="button"
+              title="מחק תשובה"
+            >
+              מחק
+            </button>
+          </div>
+        </div>
+
+        <button 
+          *ngIf="currentQuestion.Answers.length < 5"
+          (click)="addAnswer()" 
+          type="button" 
+          class="add-answer-btn"
+        >
+          הוסף תשובה נוספת
+        </button>
+      </div>
+
+      <!-- Submit Button -->
+      <button (click)="createQuestion()" type="button" class="submit-btn">
+        צור שאלה
+      </button>
+    </div>
+  </div>
+</div>

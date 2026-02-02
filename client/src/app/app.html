@@ -1,0 +1,23 @@
+<app-navigation></app-navigation>
+
+<!-- Name Modal - only show if no name saved -->
+<div *ngIf="showNameModal" class="modal-overlay">
+  <div class="modal">
+    <h2>ברוכים הבאים! 👋</h2>
+    <p>בואו נתחיל - מה שמך?</p>
+    <input 
+      type="text" 
+      [(ngModel)]="userName" 
+      placeholder="הקלד את שמך"
+      (keyup.enter)="saveName()"
+      autofocus
+    />
+    <button (click)="saveName()">אישור</button>
+  </div>
+</div>
+
+<!-- Main content - show when name is provided or after closing modal -->
+<router-outlet></router-outlet>
+
+<!-- Footer Component -->
+<app-footer></app-footer>
