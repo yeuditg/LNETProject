@@ -1,166 +1,183 @@
 <div class="vote-container">
-  <div *ngIf="!selectedQuestion" class="questions-list-view">
-    <div class="list-header">
-      <div class="header-glow"></div>
-      <h1 class="main-title">בחר שאלה</h1>
-      <p class="subtitle">רשימת כל השאלות הזמינות להצבעה</p>
-    </div>
+  @if(!selectedQuestion){
+    <div class="questions-list-view">
+      <div class="list-header">
+        <div class="header-glow"></div>
+        <h1 class="main-title">בחר שאלה</h1>
+        <p class="subtitle">רשימת כל השאלות הזמינות להצבעה</p>
+      </div>
 
-    <div class="search-section">
-      <div class="search-wrapper">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
+      <div class="search-section">
+        <div class="search-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" [(ngModel)]="searchQuery" name="searchQuery" placeholder="חפש שאלה..." class="search-input">
+        </div>
+      </div>
+
+      <div class="questions-grid">
+        @for(q of filteredQuestions(); track q.id; let i = $index){
+          <div class="question-card" (click)="selectQuestion(q)" [style.animation-delay]="i * 0.08 + 's'">
+            <div class="card-glow"></div>
+            <div class="card-content">
+              <div class="card-header">
+                <span class="question-badge" [class.trivia]="q.type === QuestionType.Trivia">
+                  {{ getQuestionTypeLabel(q.type) }}
+                </span>
+                <span class="answers-badge">{{ q.answers.length }} תשובות</span>
+              </div>
+
+              <h3 class="card-title">{{ q.text }}</h3>
+
+              <div class="card-footer">
+                <div class="votes-info">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  <span>{{ getTotalVotes(q) }} הצבעות</span>
+                </div>
+                <div class="arrow-icon">→</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if(filteredQuestions().length === 0){
+        <div class="empty-state">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+          </svg>
+          <p>לא נמצאו שאלות תואמות</p>
+        </div>
+      }
+    </div>
+  }
+
+  @if(selectedQuestion){
+    <div class="selected-question-view">
+      <button class="btn-back" (click)="backToQuestions()" type="button">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        <input type="text" [(ngModel)]="searchQuery" name="searchQuery" placeholder="חפש שאלה..." class="search-input">
-      </div>
-    </div>
+        חזור לרשימה
+      </button>
 
-    <div class="questions-grid">
-      <div *ngFor="let q of filteredQuestions(); let i = index" class="question-card" (click)="selectQuestion(q)"
-        [style.animation-delay]="i * 0.08 + 's'">
-        <div class="card-glow"></div>
-        <div class="card-content">
-          <div class="card-header">
-            <span class="question-badge" [class.trivia]="q.type === QuestionType.Trivia">
-              {{ getQuestionTypeLabel(q.type) }}
-            </span>
-            <span class="answers-badge">{{ q.answers.length }} תשובות</span>
+      <div class="question-detail-card">
+        <div class="detail-glow"></div>
+
+        <div class="detail-header">
+          <span class="question-badge large" [class.trivia]="selectedQuestion.type === QuestionType.Trivia">
+            {{ getQuestionTypeLabel(selectedQuestion.type) }}
+          </span>
+        </div>
+
+        <h2 class="detail-title">{{ selectedQuestion.text }}</h2>
+
+    
+        @if(!voteResult){
+          <div class="answers-voting">
+            <p class="voting-instruction">בחר תשובה:</p>
+            <div class="answers-list">
+              @for(answer of selectedQuestion.answers; track answer.id; let i = $index){
+                <button class="answer-button"
+                  [class.answer-color-1]="i % 4 === 0" 
+                  [class.answer-color-2]="i % 4 === 1"
+                  [class.answer-color-3]="i % 4 === 2" 
+                  [class.answer-color-4]="i % 4 === 3" 
+                  (click)="vote(answer.id)"
+                  [disabled]="loading" 
+                  type="button" 
+                  [style.animation-delay]="i * 0.1 + 's'">
+                  <div class="answer-glow"></div>
+                  <span class="answer-number">{{ i + 1 }}</span>
+                  <span class="answer-text">{{ answer.text }}</span>
+                </button>
+              }
+            </div>
           </div>
+        }
 
-          <h3 class="card-title">{{ q.text }}</h3>
+        @if(voteResult){
+          <div class="results-view">
+            <div class="results-header">
+              <h3>תוצאות ההצבעה</h3>
+              <div class="total-votes-badge">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>{{ getTotalVotes(selectedQuestion) }} הצבעות</span>
+              </div>
+            </div>
 
-          <div class="card-footer">
-            <div class="votes-info">
+            <div class="results-list">
+              @for(answer of voteResult.answers; track answer.id; let i = $index){
+                <div class="result-item"
+                  [class.correct-answer]="selectedQuestion.type === QuestionType.Trivia && isCorrectAnswer(answer)"
+                  [class.wrong-answer]="isWrongAnswer(answer)" 
+                  [class.user-choice]="isUserAnswer(answer.id)"
+                  [style.animation-delay]="i * 0.15 + 's'">
+                  <div class="result-header">
+                    <div class="result-left">
+                      <span class="result-number">{{ i + 1 }}</span>
+                      <span class="result-text">{{ answer.text }}</span>
+                    </div>
+                    <div class="result-right">
+                      <span class="result-percentage">{{ getVotePercentage(answer.votes, getTotalVotes(selectedQuestion)) }}%</span>
+                      <span class="result-votes">{{ answer.votes }} קולות</span>
+                    </div>
+                  </div>
+
+                  <div class="result-bar-container">
+                    <div class="result-bar"
+                      [style.width.%]="getVotePercentage(answer.votes, getTotalVotes(selectedQuestion))">
+                    </div>
+                  </div>
+
+                  @if(selectedQuestion.type === QuestionType.Trivia && isCorrectAnswer(answer)){
+                    <div class="status-badge correct">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                      תשובה נכונה!
+                    </div>
+                  }
+
+                  @if(isWrongAnswer(answer)){
+                    <div class="status-badge wrong">
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                      תשובה שגויה
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <button class="btn-vote-again" (click)="voteResult = null; userSelectedAnswerId = null" type="button">
               <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
               </svg>
-              <span>{{ getTotalVotes(q) }} הצבעות</span>
-            </div>
-            <div class="arrow-icon">→</div>
+              הצבע שוב
+            </button>
           </div>
-        </div>
+        }
       </div>
     </div>
-
-    <div *ngIf="filteredQuestions().length === 0" class="empty-state">
-      <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M16 16s-1.5-2-4-2-4 2-4 2"></path>
-        <line x1="9" y1="9" x2="9.01" y2="9"></line>
-        <line x1="15" y1="9" x2="15.01" y2="9"></line>
-      </svg>
-      <p>לא נמצאו שאלות תואמות</p>
-    </div>
-  </div>
-
-  <!-- Selected Question View -->
-  <div *ngIf="selectedQuestion" class="selected-question-view">
-    <button class="btn-back" (click)="backToQuestions()" type="button">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-      חזור לרשימה
-    </button>
-
-    <div class="question-detail-card">
-      <div class="detail-glow"></div>
-
-      <div class="detail-header">
-        <span class="question-badge large" [class.trivia]="selectedQuestion.type === QuestionType.Trivia">
-          {{ getQuestionTypeLabel(selectedQuestion.type) }}
-        </span>
-      </div>
-
-      <h2 class="detail-title">{{ selectedQuestion.text }}</h2>
-
-      <!-- Voting View -->
-      <div *ngIf="!voteResult" class="answers-voting">
-        <p class="voting-instruction">בחר תשובה:</p>
-        <div class="answers-list">
-          <button *ngFor="let answer of selectedQuestion.answers; let i = index" class="answer-button"
-            [class.answer-color-1]="i % 4 === 0" [class.answer-color-2]="i % 4 === 1"
-            [class.answer-color-3]="i % 4 === 2" [class.answer-color-4]="i % 4 === 3" (click)="vote(answer.id)"
-            [disabled]="loading" type="button" [style.animation-delay]="i * 0.1 + 's'">
-            <div class="answer-glow"></div>
-            <span class="answer-number">{{ i + 1 }}</span>
-            <span class="answer-text">{{ answer.text }}</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Results View -->
-      <div *ngIf="voteResult" class="results-view">
-        <div class="results-header">
-          <h3>תוצאות ההצבעה</h3>
-          <div class="total-votes-badge">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            <span>{{ getTotalVotes(selectedQuestion) }} הצבעות</span>
-          </div>
-        </div>
-
-        <div class="results-list">
-          <div *ngFor="let answer of voteResult.answers; let i = index" class="result-item"
-            [class.correct-answer]="selectedQuestion.type === QuestionType.Trivia && isCorrectAnswer(answer)"
-            [class.wrong-answer]="isWrongAnswer(answer)" [class.user-choice]="isUserAnswer(answer.id)"
-            [style.animation-delay]="i * 0.15 + 's'">
-            <div class="result-header">
-              <div class="result-left">
-                <span class="result-number">{{ i + 1 }}</span>
-                <span class="result-text">{{ answer.text }}</span>
-              </div>
-              <div class="result-right">
-                <span class="result-percentage">{{ getVotePercentage(answer.votes, getTotalVotes(selectedQuestion))
-                  }}%</span>
-                <span class="result-votes">{{ answer.votes }} קולות</span>
-              </div>
-            </div>
-
-            <div class="result-bar-container">
-              <div class="result-bar"
-                [style.width.%]="getVotePercentage(answer.votes, getTotalVotes(selectedQuestion))">
-              </div>
-            </div>
-            @if(selectedQuestion.type === QuestionType.Trivia && isCorrectAnswer(answer)){
-            <div class="status-badge correct">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              תשובה נכונה!
-            </div>
-            }
-
-            @if(isWrongAnswer(answer))
-            {
-            <div class="status-badge wrong">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-            תשובה שגויה
-             </div>
-          }
-
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-vote-again" (click)="voteResult = null; userSelectedAnswerId = null" type="button">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="1 4 1 10 7 10"></polyline>
-        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-      </svg>
-      הצבע שוב
-    </button>
-  </div>
+  }
 </div>
-
