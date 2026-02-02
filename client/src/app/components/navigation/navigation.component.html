@@ -1,64 +1,62 @@
 <nav class="navbar">
   <div class="container">
     <div class="nav-wrapper">
-      
-      <!-- Logo -->
-      <div class="logo">
-        לוגו
-      </div>
 
-      <!-- Desktop Navigation - Hidden on mobile -->
       <div class="desktop-nav">
-        <a 
-          *ngFor="let link of navLinks"
-          [routerLink]="link.path"
-          routerLinkActive="active"
-          class="nav-link"
-        >
-          <div class="link-content">
-            <!-- Icon SVG -->
-            <svg *ngIf="link.icon === 'pen'" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-              <path d="M2 2l7.586 7.586"></path>
-            </svg>
-            
-            <svg *ngIf="link.icon === 'vote'" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 11 12 14 22 4"></polyline>
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            
-            <span>{{ link.name }}</span>
-          </div>
-        </a>
+        @for(link of navLinks; track link.path) {
+          <a 
+            [routerLink]="link.path"
+            routerLinkActive="active"
+            class="nav-link"
+          >
+            <div class="link-content">
+              @if(link.icon === 'pen') {
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                  <path d="M2 2l7.586 7.586"></path>
+                </svg>
+              }
+              
+              @if(link.icon === 'vote') {
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 11 12 14 22 4"></polyline>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+              }
+              
+              <span>{{ link.name }}</span>
+            </div>
+          </a>
+        }
       </div>
 
-      <!-- Mobile Hamburger Button - Hidden on desktop -->
       <button 
         class="hamburger-btn"
         (click)="toggleMobileMenu()"
         aria-label="תפריט"
       >
-        <svg *ngIf="!isMobileMenuOpen" class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+        @if(!isMobileMenuOpen) {
+          <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        }
         
-        <svg *ngIf="isMobileMenuOpen" class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+        @if(isMobileMenuOpen) {
+          <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        }
       </button>
     </div>
   </div>
 
-  <!-- Mobile Side Menu - Hidden on desktop -->
   <div class="mobile-menu" [class.open]="isMobileMenuOpen">
-    
-    <!-- Close button inside mobile menu -->
+
     <div class="mobile-menu-header">
-      <div class="mobile-menu-title">תפריט</div>
       <button 
         class="close-btn"
         (click)="closeMobileMenu()"
@@ -70,40 +68,42 @@
       </button>
     </div>
 
-    <!-- Mobile Navigation Links -->
     <div class="mobile-nav-links">
-      <a 
-        *ngFor="let link of navLinks"
-        [routerLink]="link.path"
-        routerLinkActive="active"
-        class="nav-link"
-        (click)="closeMobileMenu()"
-      >
-        <div class="link-content">
-          <!-- Icon SVG -->
-          <svg *ngIf="link.icon === 'pen'" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-            <path d="M2 2l7.586 7.586"></path>
-          </svg>
-          
-          <svg *ngIf="link.icon === 'vote'" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 11 12 14 22 4"></polyline>
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-          </svg>
-          
-          <span>{{ link.name }}</span>
-        </div>
-      </a>
+      @for(link of navLinks; track link.path) {
+        <a 
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          class="nav-link"
+          (click)="closeMobileMenu()"
+        >
+          <div class="link-content">
+            @if(link.icon === 'pen') {
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                <path d="M2 2l7.586 7.586"></path>
+              </svg>
+            }
+            
+            @if(link.icon === 'vote') {
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+            }
+            
+            <span>{{ link.name }}</span>
+          </div>
+        </a>
+      }
     </div>
   </div>
 
-  <!-- Overlay for mobile menu -->
-   @if(isMobileMenuOpen){
- <div 
-    class="overlay" 
-    (click)="closeMobileMenu()"
-  ></div>
-   }
+  @if(isMobileMenuOpen) {
+    <div 
+      class="overlay" 
+      (click)="closeMobileMenu()"
+    ></div>
+  }
  
 </nav>
